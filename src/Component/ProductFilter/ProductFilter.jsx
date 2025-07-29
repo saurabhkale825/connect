@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ProductFilterContainer,
@@ -8,18 +8,30 @@ import {
   CheckboxLabel,
   ResetButton,
   PriceSlider,
-  PriceOptionTitle
+  PriceOptionTitle,
 } from "./ProductFilter.styles";
 import {
   setPricingOptions,
   resetFilters,
   selectPricingOptions,
+  setFiltersFromQuery,
 } from "../../features/filterSlice";
+import { useSearchParams } from "react-router-dom";
 
 const ProductFilter = () => {
   const dispatch = useDispatch();
-  const selectedOptions = useSelector(selectPricingOptions);
   const options = ["Paid", "Free", "View Only"];
+  const selectedOptions = useSelector(selectPricingOptions);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize filter options from URL parameters
+  useEffect(() => {
+    const filterParam = searchParams.get("filter");
+    if (filterParam) {
+      const optionsFromUrl = filterParam.split(",");
+      dispatch(setFiltersFromQuery({ pricingOptions: optionsFromUrl }));
+    }
+  }, [dispatch, searchParams]);
 
   const handleCheckboxChange = (option) => {
     dispatch(setPricingOptions(option));
@@ -27,6 +39,9 @@ const ProductFilter = () => {
 
   const handleReset = () => {
     dispatch(resetFilters());
+    searchParams.delete("filter");
+    searchParams.delete("search");
+    setSearchParams(searchParams);
   };
 
   return (
@@ -51,11 +66,11 @@ const ProductFilter = () => {
         ))}
       </PriceOptionContainer>
 
-      <PriceSliderContainer>
+      {/* <PriceSliderContainer>
         <p>0</p>
         <PriceSlider type="range" min="0" max="999" />
         <p>999</p>
-      </PriceSliderContainer>
+      </PriceSliderContainer> */}
 
       <ResetButton onClick={handleReset}>RESET</ResetButton>
     </ProductFilterContainer>

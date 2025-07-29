@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    pricingOptions : [],
-    keyword:"",
+    pricingOptions: [],
+    keyword: "",
 }
 
 const filterSlice = createSlice({
@@ -10,7 +10,7 @@ const filterSlice = createSlice({
     initialState,
     reducers: {
         setPricingOptions: (state, action) => {
-            if(state.pricingOptions.includes(action.payload)) {
+            if (state.pricingOptions.includes(action.payload)) {
                 state.pricingOptions = state.pricingOptions.filter(option => option !== action.payload);
             }
             else {
@@ -23,13 +23,16 @@ const filterSlice = createSlice({
         resetFilters: (state) => {
             state.pricingOptions = [];
             state.keyword = "";
-        }   
+        },
+        setFiltersFromQuery: (state, action) => {
+            state.pricingOptions = action.payload?.pricingOptions || [];
+        },
     }
 });
 
-export const { setPricingOptions, setKeyword, resetFilters } = filterSlice.actions;
+export const { setPricingOptions, setKeyword, resetFilters , setFiltersFromQuery  } = filterSlice.actions;
 export const selectPricingOptions = (state) => state.filter.pricingOptions;
-export const selectKeyword = (state) => state.filter.keyword;       
+export const selectKeyword = (state) => state.filter.keyword;
 
 export default filterSlice.reducer;
 // This slice manages the filter state for pricing options and keyword search in the application.

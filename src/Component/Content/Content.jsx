@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchContent,
@@ -27,6 +27,8 @@ const Content = () => {
     }
   }, [dispatch, status]);
 
+  
+  // Handle loading more content when the user scrolls to the bottom
   const handleObserver = useCallback(
     (entries) => {
       const target = entries[0];
@@ -38,12 +40,12 @@ const Content = () => {
     [dispatch, status]
   );
 
+  // Intersection Observer to load more content when scrolled to the bottom
   useEffect(() => {
     const option = {
       root: null,
       threshold: 1.0,
     };
-
     const currentLoader = loader.current;
     const observer = new IntersectionObserver(handleObserver, option);
     if (currentLoader) observer.observe(currentLoader);
@@ -53,18 +55,22 @@ const Content = () => {
     };
   }, [handleObserver]);
 
-  const filteredContent = content.filter((item) => {
-    const matchesPricing =
-      pricingOptions.length === 0 ||
-      pricingOptions.includes(item.pricingOption);
 
-    const matchesKeyword =
-      keyword.trim() === "" ||
-      item.creator.toLowerCase().includes(keyword.toLowerCase()) ||
-      item.title.toLowerCase().includes(keyword.toLowerCase());
 
-    return matchesPricing && matchesKeyword;
-  });
+  // Filter content based on pricing options and keyword
+  const filteredContent = useMemo(() => {
+    return content.filter((item) => {
+      const matchesPricing =
+        pricingOptions.length === 0 || pricingOptions.includes(item.pricingOption);
+
+      const matchesKeyword =
+        keyword.trim() === "" ||
+        item.creator.toLowerCase().includes(keyword.toLowerCase()) ||
+        item.title.toLowerCase().includes(keyword.toLowerCase());
+
+      return matchesPricing && matchesKeyword;
+    });
+  }, [content, pricingOptions, keyword]);
 
   return (
     <>

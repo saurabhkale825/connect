@@ -1,4 +1,4 @@
-import React, { useCallback} from "react";
+import React, { useCallback } from "react";
 import {
   KeywordSearchContainer,
   KeywordSearchInput,
@@ -6,10 +6,12 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch } from "react-redux";
 import { setKeyword } from "../../features/filterSlice";
+import { useSearchParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 const KeywordSearch = () => {
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Debounced keyword
   const debouncedDispatch = useCallback(
@@ -22,9 +24,7 @@ const KeywordSearch = () => {
   const handleChange = (e) => {
     const value = e.target.value;
     debouncedDispatch(value);
-    
   };
-
 
   return (
     <KeywordSearchContainer>
