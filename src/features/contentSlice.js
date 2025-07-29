@@ -20,7 +20,7 @@ const contentSlice = createSlice({
     status: "idle",
     error: null,
     page: 1,
-    limit: 10,
+    limit: 1,
   },
   reducers: {
     incrementPage: (state) => {
@@ -35,6 +35,7 @@ const contentSlice = createSlice({
       .addCase(fetchContent.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.content = [...state.content, ...action.payload];
+      
       })
       .addCase(fetchContent.rejected, (state, action) => {
         state.status = "failed";

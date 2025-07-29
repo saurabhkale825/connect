@@ -1,23 +1,51 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ProductFilterContainer,
   PriceOptionContainer,
+  PriceOptionInput,
   PriceSliderContainer,
   CheckboxLabel,
   ResetButton,
-  PriceSlider
+  PriceSlider,
+  PriceOptionTitle
 } from "./ProductFilter.styles";
+import {
+  setPricingOptions,
+  resetFilters,
+  selectPricingOptions,
+} from "../../features/filterSlice";
 
 const ProductFilter = () => {
+  const dispatch = useDispatch();
+  const selectedOptions = useSelector(selectPricingOptions);
   const options = ["Paid", "Free", "View Only"];
+
+  const handleCheckboxChange = (option) => {
+    dispatch(setPricingOptions(option));
+  };
+
+  const handleReset = () => {
+    dispatch(resetFilters());
+  };
 
   return (
     <ProductFilterContainer>
       <PriceOptionContainer>
-        <p>Pricing Option</p>
+        <PriceOptionTitle>Pricing Option</PriceOptionTitle>
         {options.map((option) => (
           <CheckboxLabel key={option}>
-            <input type="checkbox" />
+            <PriceOptionInput
+              type="checkbox"
+              checked={selectedOptions.includes(
+                option === "Paid" ? 0 : option === "Free" ? 1 : 2
+              )}
+              onChange={() =>
+                handleCheckboxChange(
+                  option === "Paid" ? 0 : option === "Free" ? 1 : 2
+                )
+              }
+            />
             {option}
           </CheckboxLabel>
         ))}
@@ -29,7 +57,7 @@ const ProductFilter = () => {
         <p>999</p>
       </PriceSliderContainer>
 
-      <ResetButton>RESET</ResetButton>
+      <ResetButton onClick={handleReset}>RESET</ResetButton>
     </ProductFilterContainer>
   );
 };

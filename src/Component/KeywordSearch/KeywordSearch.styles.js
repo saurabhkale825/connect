@@ -8,7 +8,7 @@ export const KeywordSearchContainer = styled.div`
     align-items: center;
     padding: 0 20px;
    border: none;
-    background-color: #0000009b;
+    background-color: #00000063;
     margin: 20px 0;
     cursor: pointer;
 `

@@ -6,6 +6,10 @@ import {
   selectContent,
   selectContentStatus,
 } from "../../features/contentSlice";
+import {
+  selectPricingOptions,
+  selectKeyword,
+} from "../../features/filterSlice";
 import { ContentContainer } from "./Content.styles";
 import ProductCard from "../ProductCard/ProductCard";
 
@@ -13,6 +17,8 @@ const Content = () => {
   const dispatch = useDispatch();
   const content = useSelector(selectContent);
   const status = useSelector(selectContentStatus);
+  const pricingOptions = useSelector(selectPricingOptions);
+  const keyword = useSelector(selectKeyword);
   const loader = useRef(null);
 
   useEffect(() => {
@@ -35,27 +41,39 @@ const Content = () => {
   useEffect(() => {
     const option = {
       root: null,
-      rootMargin: "20px",
       threshold: 1.0,
     };
+
+    const currentLoader = loader.current;
     const observer = new IntersectionObserver(handleObserver, option);
-    if (loader.current) observer.observe(loader.current);
+    if (currentLoader) observer.observe(currentLoader);
 
     return () => {
-      if (loader.current) observer.unobserve(loader.current);
+      if (currentLoader) observer.unobserve(currentLoader);
     };
   }, [handleObserver]);
+
+  const filteredContent = content.filter((item) => {
+    const matchesPricing =
+      pricingOptions.length === 0 ||
+      pricingOptions.includes(item.pricingOption);
+
+    const matchesKeyword =
+      keyword.trim() === "" ||
+      item.creator.toLowerCase().includes(keyword.toLowerCase()) ||
+      item.title.toLowerCase().includes(keyword.toLowerCase());
+
+    return matchesPricing && matchesKeyword;
+  });
 
   return (
     <>
       <ContentContainer>
-        {content.map((item) => (
+        {filteredContent.map((item) => (
           <ProductCard key={item.id} data={item} />
         ))}
       </ContentContainer>
-      <div ref={loader}>
-        {status === "loading" && <p style={{ textAlign: "center" }}>Loading more...</p>}
-      </div>
+      <div ref={loader}></div>
     </>
   );
 };
